@@ -1,0 +1,88 @@
+<script>
+function jhpShowTexting(){
+  document.getElementById("jhpTextingInitial").style.display="none";
+  document.getElementById("jhpTextingBlock").style.display="block";
+  for(var tds = document.getElementsByClassName('lrow form_label form_label_normal'), i = tds.length; i--;){
+    console.log("Trying one")
+    if(tds[i].innerHTML.match(/Mobile Phone/)){
+      console.log("Got mobile phone")
+      document.getElementById("jhpMobileNumber").value = tds[i].nextSibling.nextSibling.textContent;
+      console.log("Found " + tds[i].nextSibling.textContent);
+      console.log("Found " + tds[i].nextSibling.nextSibling.textContent);
+      return
+    }
+  }
+  for(var tds = document.getElementsByClassName('lrow form_label form_label_normal'), i = tds.length; i--;){
+    console.log("Trying one again")
+    if(tds[i].innerHTML.match(/Home Phone/)){
+      console.log("Got home phone")
+      document.getElementById("jhpMobileNumber").value = tds[i].nextSibling.nextSibling.textContent;
+      console.log("Found " + tds[i].nextSibling.textContent);
+      console.log("Found " + tds[i].nextSibling.nextSibling.textContent);
+      return
+    }
+  }
+}
+function jhpHideTexting(){
+  document.getElementById("jhpTextingInitial").style.display="block";
+  document.getElementById("jhpTextingBlock").style.display="none";
+}
+function jhpSendTextCallback(oxmlhttp){
+  if (oxmlhttp.readyState==4 && oxmlhttp.status==200){
+    document.getElementById("jhpSendResult").innerHTML = oxmlhttp.responseText;
+    document.getElementById("jhpTextMessage").value = "";
+  }
+}
+function jhpGrabUserName(){
+  var jhpUsername;
+  for(var els = document.getElementsByClassName('user'), i = els.length; i--;){
+    if(els[i].tagName == 'LI'){
+      var linktag = els[i].firstChild.firstChild.nextSibling;
+      jhpUsername = linktag.innerHTML;
+      break;
+    }
+  }
+  return(jhpUsername)
+}
+function jhpSendText(){
+  var jhpCaseId = window.location.href;
+  jhpCaseId  = jhpCaseId.replace(/.*\//, '');
+  jhpCaseId  = jhpCaseId.replace(/\?.*/, '');
+  jhpCaseId  = jhpCaseId.replace(/\#/, '');
+  jhpNumber  = document.getElementById("jhpMobileNumber").value;
+  jhpMessage = document.getElementById("jhpTextMessage").value;
+  var jhpUsername = jhpGrabUserName();
+  jhpSendPost("/proxycgi/send-text.pl", 'id=' + encodeURI(jhpCaseId) + '&number=' + encodeURI(jhpNumber) + '&message=' + encodeURI(jhpMessage) + '&snum=' + encodeURI(jhpUsername), jhpSendTextCallback);
+  console.log("Ok, sent off the POST")
+  return;
+}
+function jhpSendPost(path, postdata, callback){
+  oxmlhttp = null;
+  try
+  {
+    oxmlhttp = new XMLHttpRequest();
+    oxmlhttp.overrideMimeType("text/plain");
+  }
+  catch(e){
+    try {
+      oxmlhttp = new ActiveXObject("Msxml2.XMLHTTP");
+    }
+    catch(e){
+      return null;
+    }
+  }
+  if(!oxmlhttp) return null;
+  try{
+    oxmlhttp.open("POST", path, true);
+    oxmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+    oxmlhttp.onreadystatechange=function(){
+      callback(oxmlhttp);
+    }
+    oxmlhttp.send(postdata);
+  }
+  catch(e){
+    return null;
+  }
+  return;
+}
+</script>

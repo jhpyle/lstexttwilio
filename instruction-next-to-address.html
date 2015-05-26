@@ -1,0 +1,32 @@
+<div id="jhpTextingInitial"><a style="cursor:pointer;" onclick="jhpShowTexting();">Send text message to client</a></div>
+<div id="jhpTextingBlock" style="display:none;"><a style="cursor:pointer;" onclick="jhpHideTexting();">Hide</a><br>
+<br>
+Sent from 215-987-2680. <i>See</i> <a target="_blank" href="https://wiki.philalegal.org/wiki/index.php/Text_messaging">Text messaging</a>.<br>
+<div class="form_container">
+<div class="formElement" style="">
+<div class="form_section">
+<b>Send text message to client</b>
+</div>
+</div>
+<table class="formElement form_element_static form_element">
+<tbody>
+<tr>
+<td class="lrow form_label form_label_normal">Mobile Number</td>
+<td class="rrow form_value"><input id="jhpMobileNumber" style="margin:0;"></td>
+</tr>
+</tbody>
+</table>
+<table class="formElement form_element_static form_element">
+<tbody>
+<tr>
+<td class="lrow form_label form_label_normal">Content of message</td>
+<td class="rrow form_value">
+<textarea style="margin:0;" id="jhpTextMessage">
+</textarea>
+<button type="button" onclick="jhpSendText();">Send</button></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="jhpSendResult"></div>
+</div>

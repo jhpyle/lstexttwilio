@@ -12,10 +12,10 @@ my $mytextnumber = '2159872680';
 
 my $q = new CGI;
 
-my $ldref = DBI->connect('dbi:Pg:dbname=pla_live;host=192.168.200.204', 'psti', 'pstipsti', {AutoCommit => 1}) or croak DBI->errstr;
+my $ldref = DBI->connect('dbi:Pg:dbname=pla_live;host=192.168.200.204', 'psti', 'secretsecret', {AutoCommit => 1}) or croak DBI->errstr;
 
-my $twilio = WWW::Twilio::API->new(AccountSid => 'ACfad8e668b5f9e15d499ab823523b9358',
-				   AuthToken  => '86549c9a407b25d32f21c758e7b09546');
+my $twilio = WWW::Twilio::API->new(AccountSid => 'ACfad8e6secretsecret823523b9358',
+				   AuthToken  => '86549c9asecretsecret9546');
 
 my $id = $q->param('id');
 my $phone_number = $q->param('number');
@@ -58,7 +58,7 @@ if ($case_id && $phone_number && $text_message){
     (
      header_str => [
 		    From    => 'textmessage@philalegal.org',
-		    To      => $case_id . '@pla.legalserver.org',
+		    To      => $case_id . '@your.cms.hostname.com',
 		    Subject => 'Text message sent',
 		   ],
      attributes => {

@@ -41,7 +41,7 @@ my @caseinfo;
 if ($phone_number){
   my $phone;
   my (@conditions, @parameters);
-  my $ldref = DBI->connect('dbi:Pg:dbname=pla_live;host=192.168.200.204', 'psti', 'pstipsti', {AutoCommit => 1}) or croak DBI->errstr;
+  my $ldref = DBI->connect('dbi:Pg:dbname=pla_live;host=192.168.200.204', 'psti', 'secretsecret', {AutoCommit => 1}) or croak DBI->errstr;
   my $initial = "select person.id as personid, matter.id as matterid, matter.identification_number, matter.date_open, matter.close_date, lookup_legal_problem_code.name as problem_code, person.first, person.last, person.addr1, person.city, person.state, person.zip, person.phone_business, person.phone_home, person.phone_mobile, person.phone_fax, person.phone_other, lookup_case_disposition.name as disposition, userperson.first as sfname, userperson.last as slname, userperson.email as semail from person left outer join matter on (matter.person_id=person.id) left outer join lookup_case_disposition on (matter.case_disposition=lookup_case_disposition.id) left outer join lookup_legal_problem_code on (matter.legal_problem_code=lookup_legal_problem_code.id) left outer join matter_assignment_primary on (matter.id=matter_assignment_primary.matter_id) left outer join users on (matter_assignment_primary.user_id=users.id) left outer join person as userperson on (users.person_id=userperson.id) where ";
   my $just_digits = $phone_number;
   $just_digits =~ s/[^0-9]//g;
@@ -102,7 +102,7 @@ foreach my $file (@files){
   $tr_body .= "</p>";
   foreach my $d (@caseinfo){
     $body .= $d->{first} . " " . $d->{last} . ", " . $d->{identification_number} . ": " . $d->{disposition} . ", " . $d->{"problem_code"} . "\n";
-    $tr_body .= "<p>" . $d->{first} . " " . $d->{last} . ", " . "<a href=\"http://pla.legalserver.org/matter/dynamic-profile/view/" . $d->{matterid} . "\">" . $d->{identification_number} . "</a>" . ($d->{sfname} ? ' (' . $d->{sfname} . ' ' . $d->{slname} . ')' : '') . ": " . $d->{disposition} . ", " . $d->{"problem_code"} . "</p>\n";
+    $tr_body .= "<p>" . $d->{first} . " " . $d->{last} . ", " . "<a href=\"http://your.cms.hostname.com/matter/dynamic-profile/view/" . $d->{matterid} . "\">" . $d->{identification_number} . "</a>" . ($d->{sfname} ? ' (' . $d->{sfname} . ' ' . $d->{slname} . ')' : '') . ": " . $d->{disposition} . ", " . $d->{"problem_code"} . "</p>\n";
   }
   #print STDERR "Body is $tr_body\n";
   {
@@ -232,7 +232,7 @@ if ($numopen > 0 && $numopen < 3){
       $extra_recipients{$d->{sfname} . " " . $d->{slname} . " <" . $d->{semail} . ">"} = 1;
     }
     if ($d->{identification_number}){
-      $extra_recipients{$d->{identification_number} . " <" . $d->{identification_number} . '@pla.legalserver.org>'} = 1;
+      $extra_recipients{$d->{identification_number} . " <" . $d->{identification_number} . '@your.cms.hostname.com>'} = 1;
     }
   }
   if (scalar(keys %extra_recipients)){

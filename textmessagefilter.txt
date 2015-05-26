@@ -1,0 +1,6 @@
+#Exim filter
+if $local_part is "texts"
+then
+pipe /usr/lib/cgi-bin/read-text.pl
+seen finish
+endif
