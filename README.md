@@ -8,49 +8,49 @@ See twilio-screenshot.png for a summary of our Twilio configuration.  When a tex
 
 This is a short bit of PHP that converts a Twilio text message into an e-mail.  It sends an e-mail message to texts@text.jonathanpyle.com.  The MX record associated with text.jonathanpyle.com points to the docket.philalegal.org server.  The mail server on this machine, exim4, processes the e-mail.
 
-  <?php
-  /**
-  * This section ensures that Twilio gets a response.
-  */
-  header('Content-type: text/xml');
-  echo '<?xml version="1.0" encoding="UTF-8"?>';
-  echo '<Response></Response>'; //Place the desired response (if any) here
-  /**
-  * This section actually sends the email.
-  */
-  $to = "texts@text.jonathanpyle.com"; // Your email address
-  $subject = "Message from {$_REQUEST['From']} at {$_REQUEST['To']}";
-  $message = "You have received a message from {$_REQUEST['From']}.\n\n
-  {$_REQUEST['Body']}";
-  if ($_REQUEST['NumMedia'] > 0){
-	$message .= "\n\nLinks to attached files:\n";
-  }
-  for ($x = 0; $x < $_REQUEST['NumMedia']; $x++) {
-	$message .= "\n".$_REQUEST['MediaUrl'.$x]; 
-  } 
-  $headers = "From: jpyle@philalegal.org"; // Who should it come from?
-  mail($to, $subject, $message, $headers);
+	<?php
+	/**
+	* This section ensures that Twilio gets a response.
+	*/
+	header('Content-type: text/xml');
+	echo '<?xml version="1.0" encoding="UTF-8"?>';
+	echo '<Response></Response>'; //Place the desired response (if any) here
+	/**
+	* This section actually sends the email.
+	*/
+	$to = "texts@text.jonathanpyle.com"; // Your email address
+	$subject = "Message from {$_REQUEST['From']} at {$_REQUEST['To']}";
+	$message = "You have received a message from {$_REQUEST['From']}.\n\n
+	{$_REQUEST['Body']}";
+	if ($_REQUEST['NumMedia'] > 0){
+	  $message .= "\n\nLinks to attached files:\n";
+	}
+	for ($x = 0; $x < $_REQUEST['NumMedia']; $x++) {
+	  $message .= "\n".$_REQUEST['MediaUrl'.$x]; 
+	} 
+	$headers = "From: jpyle@philalegal.org"; // Who should it come from?
+	mail($to, $subject, $message, $headers);
 
 ## callreply.pl
 
 Twilio calls this script when someone calls our texting number.  This script instructs Twilio to play the audio file located at http://docket.philalegal.org/auto-reply.mp3 for the caller.  This mp3 file simply tells the caller that they need to call a different number.
 
-  #!/usr/bin/perl
-  use strict;
-  use Carp;
-  use warnings;
-  use CGI qw/:standard/;
-  my $q = CGI->new();
+	#!/usr/bin/perl
+	use strict;
+	use Carp;
+	use warnings;
+	use CGI qw/:standard/;
+	my $q = CGI->new();
 
-  print $q->header(-type => 'application/xml', -expires => 'now');
-  my $string = <<'EOF';
-  <?xml version="1.0" encoding="UTF-8" ?>
-  <Response>
-	<Play>http://docket.philalegal.org/auto-reply.mp3</Play>
-  </Response>
-  EOF
-  print $string;
-  exit;
+	print $q->header(-type => 'application/xml', -expires => 'now');
+	my $string = <<'EOF';
+	<?xml version="1.0" encoding="UTF-8" ?>
+	<Response>
+	  <Play>http://docket.philalegal.org/auto-reply.mp3</Play>
+	</Response>
+	EOF
+	print $string;
+	exit;
 
 ## auto-reply.mp3
 
@@ -62,30 +62,30 @@ When the e-mail server at docket.philalegal.org receives an e-mail to the recipi
 
 The exim4 configuration file, /etc/exim4/exim4.conf.template, contains the following lines:
 
-  ### router/100_exim4-config_domain_literal
-  #################################
+	### router/100_exim4-config_domain_literal
+	#################################
 
-  central_filter:
-	driver = redirect
-	domains = +local_domains
-	file = /etc/exim4/textmessagefilter.txt
-	user = jpyle
-	group = jpyle
-	no_verify
-	allow_filter
-	allow_freeze
-	pipe_transport = address_pipe
+	central_filter:
+	  driver = redirect
+	  domains = +local_domains
+	  file = /etc/exim4/textmessagefilter.txt
+	  user = jpyle
+	  group = jpyle
+	  no_verify
+	  allow_filter
+	  allow_freeze
+	  pipe_transport = address_pipe
 
 ## textmessagefilter.txt
 
 The file /etc/exim4/textmessagefilter.txt, which is referenced in the exim4 configuration above, is a short file with the following contents:
 
-  #Exim filter
-  if $local_part is "texts"
-  then
-  pipe /usr/lib/cgi-bin/read-text.pl
-  seen finish
-  endif
+	#Exim filter
+	if $local_part is "texts"
+	then
+	pipe /usr/lib/cgi-bin/read-text.pl
+	seen finish
+	endif
 
 # Processing the e-mail containing the incoming text message
 
